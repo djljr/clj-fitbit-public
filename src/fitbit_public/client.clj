@@ -7,25 +7,23 @@
   (with-open [in (java.io.PushbackReader. (clojure.java.io/reader "settings.edn"))]
     (edn/read in)))
 
-(def auth-urls
+(def endpoints
   {:request-token "https://api.fitbit.com/oauth/request_token"
    :access-token  "https://api.fitbit.com/oauth/access_token"
    :authorize     "https://www.fitbit.com/oauth/authorize"})
 
 (defn profile [user]
-  (let [url (str "http://api.fitbit.com/1/user/" user "/profile.json")
+    (let [url (str "http://api.fitbit.com/1/user/" user "/activities/date/2014-07-24.json")
         consumer (oauth/make-consumer 
                    (:consumer-key settings) 
                    (:consumer-secret settings)
-                   (:request-token auth-urls)
-                   (:access-token auth-urls)
-                   (:authorize auth-urls)
-                   :hmac-sha1)
+                   (:request-token endpoints)
+                   (:access-token endpoints)
+                   (:authorize endpoints)
+                   :plaintext)
         request-token (oauth/request-token consumer)
         credentials (oauth/credentials consumer
-                      (:oauth_token request-token)
-                      (:oauth_token_secret request-token)
+                      nil nil
                       :POST url {})
-        headers (oauth/build-request credentials)
-        _ (println headers)]
-    (http/post url headers)))
+        headers (oauth/build-request (dissoc credentials :oauth_token))]
+    (http/post url (merge headers))))
