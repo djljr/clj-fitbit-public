@@ -6,8 +6,8 @@ A Clojure library designed to access the public Fitbit API. The public API is wh
 
 Each endpoint is a separate function, you need to call the function with at least your OAuth consumer-key, consumer-secret of you [registered app][1] and the user-id of the profile you want to look at. Some also require a date or date range to view.
 ---
-> (def credentials {:consumer-key "..." :consumer-secret "..."})
-> (profile credentials "<user-id>")
+> (def api-key {:consumer-key "..." :consumer-secret "..."})
+> (profile api-key "<user-id>")
 {"user" { ... }}
 ---
 
@@ -19,12 +19,12 @@ Dates and the base-dates should be of the format "yyyy-MM-dd". A period for the 
 
 * No additional params
  * profile
-* Date based functions, (activities credentials user-id date)
+* Date based functions, (activities api-key user-id date)
  * activities
  * body
  * food-log
  * sleep
-* [Date-range base functions][2], (timeseries-activities-steps credentials user-id base-date period)
+* [Date-range base functions][2], (timeseries-activities-steps api-key user-id base-date period)
  * foods-log-calories-in
  * foods-log-water
  * activities-calories

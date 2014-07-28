@@ -10,12 +10,12 @@
    :authorize     "https://www.fitbit.com/oauth/authorize"})
 
 (defn- oauth-headers 
-  ([credentials url] 
-    (oauth-headers credentials url false))
-  ([credentials url debug]
+  ([api-key url] 
+    (oauth-headers api-key url false))
+  ([api-key url debug]
     (let [consumer (oauth/make-consumer 
-                     (:consumer-key credentials) 
-                     (:consumer-secret credentials)
+                     (:consumer-key api-key) 
+                     (:consumer-secret api-key)
                      (:request-token endpoints)
                      (:access-token endpoints)
                      (:authorize endpoints)
@@ -32,22 +32,22 @@
 (defn- api-request [url headers debug]
   (json/read-str (:body (http/get url (merge headers {:throw-exceptions false} (if debug {:debug true}))))))
 
-(defn- do-request [credentials user-id path debug]
+(defn- do-request [api-key user-id path debug]
   (let [url (str (make-url user-id) path)
-        headers (oauth-headers credentials url)]
+        headers (oauth-headers api-key url)]
     (api-request url headers debug)))
 
 (defmacro def-request [name path]
-  `(defn ~name [credentials# user-id# & {:keys [debug#] :or {debug# false}}]
-    (do-request credentials# user-id# ~path debug#)))
+  `(defn ~name [api-key# user-id# & {:keys [debug#] :or {debug# false}}]
+    (do-request api-key# user-id# ~path debug#)))
 
 (defmacro def-request-date [name path]
-  `(defn ~name [credentials# user-id# date# & {:keys [debug#] :or {debug# false}}]
-    (do-request credentials# user-id# (str ~path "/date/" date# ".json") debug#)))
+  `(defn ~name [api-key# user-id# date# & {:keys [debug#] :or {debug# false}}]
+    (do-request api-key# user-id# (str ~path "/date/" date# ".json") debug#)))
 
 (defmacro def-request-timeseries [name path]
-  `(defn ~name [credentials# user-id# base-date# period-or-end-date# & {:keys [debug#] :or {debug# false}}]
-    (do-request credentials# user-id# (str ~path "/date/" base-date# "/" period-or-end-date# ".json") debug#)))
+  `(defn ~name [api-key# user-id# base-date# period-or-end-date# & {:keys [debug#] :or {debug# false}}]
+    (do-request api-key# user-id# (str ~path "/date/" base-date# "/" period-or-end-date# ".json") debug#)))
 
 (def-request profile "/profile.json")
 
