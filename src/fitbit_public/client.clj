@@ -41,133 +41,74 @@
         headers (oauth-headers url)]
     (api-request url headers debug)))
 
+(defmacro def-request [name path]
+  `(defn ~name [user-id# & {:keys [debug#] :or {debug# false}}]
+    (do-request user-id# ~path debug#)))
+
+(defmacro def-request-date [name path]
+  `(defn ~name [user-id# date# & {:keys [debug#] :or {debug# false}}]
+    (do-request user-id# (str ~path "/date/" date# ".json") debug#)))
+
+(defmacro def-request-timeseries [name path]
+  `(defn ~name [user-id# base-date# period-or-end-date# & {:keys [debug#] :or {debug# false}}]
+    (do-request user-id# (str ~path "/date/" base-date# "/" period-or-end-date# ".json") debug#)))
+
+(def-request profile "/profile.json")
+
 ; single day requests
 
-(defn profile [user-id & {:keys [debug] :or {debug false}}] 
-  (do-request user-id "/profile.json" debug))
-
-(defn activities [user-id date & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/date/" date ".json") debug))
-
-(defn body [user-id date & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/body/date/" date ".json") debug))
-
-(defn food-log [user-id date & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/foods/log/date/" date ".json") debug))
-
-(defn sleep [user-id date & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/sleep/date/" date ".json") debug))
+(def-request-date activities "/activities")
+(def-request-date body "/body")
+(def-request-date food-log "/foods/log")
+(def-request-date sleep "/sleep")
 
 ; timeseries
 
 ;; food
 
-(defn timeseries-foods-calories-in [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/foods/log/caloriesIn/date/" start "/" end ".json") debug))
+(def-request-timeseries timeseries-foods-calories-in "/foods/log/caloriesIn")
+(def-request-timeseries timeseries-foods-water "/foods/log/water")
 
-(defn timeseries-foods-water [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/foods/log/water/date/" start "/" end ".json") debug))
+;; activities
 
-;; timeseries activities
+(def-request-timeseries timeseries-activities-calories "/activities/calories")
+(def-request-timeseries timeseries-activities-calories-bmr "/activities/caloriesBMR")
+(def-request-timeseries timeseries-activities-steps "/activities/steps")
+(def-request-timeseries timeseries-activities-distance "/activities/distance")
+(def-request-timeseries timeseries-activities-floors "/activities/floors")
+(def-request-timeseries timeseries-activities-elevation "/activities/elevation")
+(def-request-timeseries timeseries-activities-minutes-sedentary "/activities/minutesSedentary")
+(def-request-timeseries timeseries-activities-minutes-lightly-active "/activities/minutesLightlyActive")
+(def-request-timeseries timeseries-activities-minutes-fairly-active "/activities/minutesFairlyActive")
+(def-request-timeseries timeseries-activities-minutes-very-active "/activities/minutesVeryActive")
+(def-request-timeseries timeseries-activities-activity-calories "/activities/activityCalories")
 
-(defn timeseries-activities-calories [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/calories/date/" start "/" end ".json") debug))
+;; activities tracker
 
-(defn timeseries-activities-calories-bmr [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/caloriesBMR/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-steps [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/steps/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-distance [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/distance/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-floors [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/floors/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-elevation [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/elevation/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-minutes-sedentary [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/minutesSedentary/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-minutes-lightly-active [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/minutesLightlyActive/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-minutes-fairly-active [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/minutesFairlyActive/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-minutes-very-active [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/minutesVeryActive/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-activity-calories [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/activityCalories/date/" start "/" end ".json") debug))
-
-;; timeseries activities tracker
-
-(defn timeseries-activities-tracker-calories [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/tracker/calories/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-tracker-steps [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/tracker/steps/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-tracker-distance [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/tracker/distance/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-tracker-floors [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/tracker/floors/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-tracker-elevation [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/tracker/elevation/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-tracker-minutes-sedentary [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/tracker/minutesSedentary/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-tracker-minutes-lightly-active [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/tracker/minutesLightlyActive/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-tracker-minutes-fairly-active [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/tracker/minutesFairlyActive/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-tracker-minutes-very-active [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/tracker/minutesVeryActive/date/" start "/" end ".json") debug))
-
-(defn timeseries-activities-tracker-minutes-activity-calories [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/activities/tracker/activityCalories/date/" start "/" end ".json") debug))
+(def-request-timeseries timeseries-activities-tracker-calories "/activities/tracker/calories")
+(def-request-timeseries timeseries-activities-tracker-steps "/activities/tracker/steps")
+(def-request-timeseries timeseries-activities-tracker-distance "/activities/tracker/distance")
+(def-request-timeseries timeseries-activities-tracker-floors "/activities/tracker/floors")
+(def-request-timeseries timeseries-activities-tracker-elevation "/activities/tracker/elevation")
+(def-request-timeseries timeseries-activities-tracker-minutes-sedentary "/activities/tracker/minutesSedentary")
+(def-request-timeseries timeseries-activities-tracker-minutes-lightly-active "/activities/tracker/minutesLightlyActive")
+(def-request-timeseries timeseries-activities-tracker-minutes-fairly-active "/activities/tracker/minutesFairlyActive")
+(def-request-timeseries timeseries-activities-tracker-minutes-very-active "/activities/tracker/minutesVeryActive")
+(def-request-timeseries timeseries-activities-tracker-minutes-activity-calories "/activities/tracker/activityCalories")
 
 ;; sleep
 
-(defn timeseries-sleep-start-time [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/sleep/startTime/date/" start "/" end ".json") debug))
-
-(defn timeseries-sleep-time-in-bed [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/sleep/timeInBed/date/" start "/" end ".json") debug))
-
-(defn timeseries-sleep-minutes-asleep [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/sleep/minutesAsleep/date/" start "/" end ".json") debug))
-
-(defn timeseries-sleep-awakenings-count [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/sleep/awakeningsCount/date/" start "/" end ".json") debug))
-
-(defn timeseries-sleep-minutes-awake [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/sleep/minutesAwake/date/" start "/" end ".json") debug))
-
-(defn timeseries-sleep-minutes-to-fall-asleep [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/sleep/minutesToFallAsleep/date/" start "/" end ".json") debug))
-
-(defn timeseries-sleep-minutes-after-wakeup [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/sleep/minutesAfterWakeup/date/" start "/" end ".json") debug))
-
-(defn timeseries-sleep-efficiency [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/sleep/efficiency/date/" start "/" end ".json") debug))
+(def-request-timeseries timeseries-sleep-start-time "/sleep/startTime")
+(def-request-timeseries timeseries-sleep-time-in-bed "/sleep/timeInBed")
+(def-request-timeseries timeseries-sleep-minutes-asleep "/sleep/minutesAsleep")
+(def-request-timeseries timeseries-sleep-awakenings-count "/sleep/awakeningsCount")
+(def-request-timeseries timeseries-sleep-minutes-awake "/sleep/minutesAwake")
+(def-request-timeseries timeseries-sleep-minutes-to-fall-asleep "/sleep/minutesToFallAsleep")
+(def-request-timeseries timeseries-sleep-minutes-after-wakeup "/sleep/minutesAfterWakeup")
+(def-request-timeseries timeseries-sleep-efficiency "/sleep/efficiency")
 
 ;; body
 
-(defn timeseries-body-weight [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/body/weight/date/" start "/" end ".json") debug))
-
-(defn timeseries-body-bmi [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/body/bmi/date/" start "/" end ".json") debug))
-
-(defn timeseries-body-fat [user-id start end & {:keys [debug] :or {debug false}}]
-  (do-request user-id (str "/body/fat/date/" start "/" end ".json") debug))
+(def-request-timeseries timeseries-body-weight "/body/weight")
+(def-request-timeseries timeseries-body-bmi "/body/bmi")
+(def-request-timeseries timeseries-body-fat "/body/fat/date")
