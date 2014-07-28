@@ -4,26 +4,22 @@
             [clj-http.client :as http]
             [clojure.data.json :as json]))
 
-(def settings
-  (with-open [in (java.io.PushbackReader. (clojure.java.io/reader "settings.edn"))]
-    (edn/read in)))
-
 (def endpoints
   {:request-token "https://api.fitbit.com/oauth/request_token"
    :access-token  "https://api.fitbit.com/oauth/access_token"
    :authorize     "https://www.fitbit.com/oauth/authorize"})
 
 (defn- oauth-headers 
-  ([url] 
-    (oauth-headers url false))
-  ([url debug]
+  ([credentials url] 
+    (oauth-headers credentials url false))
+  ([credentials url debug]
     (let [consumer (oauth/make-consumer 
-                   (:consumer-key settings) 
-                   (:consumer-secret settings)
-                   (:request-token endpoints)
-                   (:access-token endpoints)
-                   (:authorize endpoints)
-                   :plaintext)
+                     (:consumer-key credentials) 
+                     (:consumer-secret credentials)
+                     (:request-token endpoints)
+                     (:access-token endpoints)
+                     (:authorize endpoints)
+                     :plaintext)
         request-token (oauth/request-token consumer)
         credentials (oauth/credentials consumer
                       nil nil
@@ -36,22 +32,22 @@
 (defn- api-request [url headers debug]
   (json/read-str (:body (http/get url (merge headers {:throw-exceptions false} (if debug {:debug true}))))))
 
-(defn- do-request [user-id path debug]
+(defn- do-request [credentials user-id path debug]
   (let [url (str (make-url user-id) path)
-        headers (oauth-headers url)]
+        headers (oauth-headers credentials url)]
     (api-request url headers debug)))
 
 (defmacro def-request [name path]
-  `(defn ~name [user-id# & {:keys [debug#] :or {debug# false}}]
-    (do-request user-id# ~path debug#)))
+  `(defn ~name [credentials# user-id# & {:keys [debug#] :or {debug# false}}]
+    (do-request credentials# user-id# ~path debug#)))
 
 (defmacro def-request-date [name path]
-  `(defn ~name [user-id# date# & {:keys [debug#] :or {debug# false}}]
-    (do-request user-id# (str ~path "/date/" date# ".json") debug#)))
+  `(defn ~name [credentials# user-id# date# & {:keys [debug#] :or {debug# false}}]
+    (do-request credentials# user-id# (str ~path "/date/" date# ".json") debug#)))
 
 (defmacro def-request-timeseries [name path]
-  `(defn ~name [user-id# base-date# period-or-end-date# & {:keys [debug#] :or {debug# false}}]
-    (do-request user-id# (str ~path "/date/" base-date# "/" period-or-end-date# ".json") debug#)))
+  `(defn ~name [credentials# user-id# base-date# period-or-end-date# & {:keys [debug#] :or {debug# false}}]
+    (do-request credentials# user-id# (str ~path "/date/" base-date# "/" period-or-end-date# ".json") debug#)))
 
 (def-request profile "/profile.json")
 
