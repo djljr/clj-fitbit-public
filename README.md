@@ -5,12 +5,15 @@ A Clojure library designed to access the public Fitbit API. The public API is wh
 ## Usage
 
 Add the dependency to your project:
+
     [clj-fitbit-public "0.1.0"]
 
 require it
+
     > (require '[fitbit-public.client :as fitbit])
 
 Each endpoint is a separate function, you need to call the function with at least your OAuth consumer-key, consumer-secret of your [registered app][1] and the user-id of the profile you want to look at. Some also require a date or date range.
+
     > (def api-key {:consumer-key "..." :consumer-secret "..."})
     > (fitbit/profile api-key "<user-id>")
     {"user" { ... }}
