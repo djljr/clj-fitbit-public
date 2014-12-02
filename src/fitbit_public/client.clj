@@ -27,7 +27,7 @@
     (oauth/build-request (dissoc credentials :oauth_token)))))
 
 (defn- make-url [user-id]
-  (str "http://api.fitbit.com/1/user/" user-id))
+  (str "https://api.fitbit.com/1/user/" user-id))
 
 (defn- api-request [url headers debug]
   (json/read-str (:body (http/get url (merge headers {:throw-exceptions false} (if debug {:debug true}))))))

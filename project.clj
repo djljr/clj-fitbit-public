@@ -1,4 +1,4 @@
-(defproject fitbit-public "0.1.2"
+(defproject fitbit-public "0.2.0"
   :description "Query publicly accessible parts of user profiles through the Fitbit API"
   :url "http://github.com/djljr/clj-fitbit-public"
   :license {:name "Eclipse Public License"
