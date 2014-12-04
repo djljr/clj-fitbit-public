@@ -6,7 +6,7 @@ A Clojure library designed to access the public Fitbit API. The public API is wh
 
 Add the dependency to your project:
 
-    [fitbit-public "0.1.2"]
+[![Clojars Project](http://clojars.org/fitbit-public/latest-version.svg)](http://clojars.org/fitbit-public)
 
 require it
 
